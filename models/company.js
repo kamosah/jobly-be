@@ -64,9 +64,10 @@ class Company {
     }
 
     const jobsRes = await db.query(
-      `SELECT id, title, salary, equity
-            FROM jobs 
-            WHERE company_handle = $1`,
+      `SELECT id, title, salary, equity, a.state
+       FROM jobs 
+         LEFT JOIN applications AS a ON id = a.job_id
+       WHERE company_handle = $1`,
       [handle]);
 
     company.jobs = jobsRes.rows;

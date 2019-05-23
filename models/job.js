@@ -8,7 +8,6 @@ class Job {
 
   /** Find all jobs (can filter on terms in data). */
   static async findAll(data, username) {
-    /******************************/
     let baseQuery = `
       SELECT id, title, company_handle, salary, equity, c.name, a.state 
       FROM jobs
@@ -16,7 +15,6 @@ class Job {
         LEFT OUTER JOIN applications AS a on a.job_id = id AND a.username = $1`;
     let whereExpressions = [];
     let queryValues = [username];
-    /******************************/
 
     // For each possible search term, add to whereExpressions and
     // queryValues so we can generate the right SQL
@@ -50,14 +48,12 @@ class Job {
   /** Given a job id, return data about job. */
 
   static async findOne(id) {
-    /******************************/
     const jobRes = await db.query(
       `SELECT id, title, salary, equity, company_handle, c.name
           FROM jobs
             JOIN companies AS c ON company_handle = c.handle
           WHERE id = $1`,
       [id]);
-    /******************************/
 
     const job = jobRes.rows[0];
 
