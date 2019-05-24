@@ -6,6 +6,22 @@ const sqlForPartialUpdate = require("../helpers/partialUpdate");
 
 class Job {
 
+  /** Find all jobs for user. */
+
+  static async findUserJobs(username) {
+    let res = await db.query(`
+    SELECT id, title, company_handle, salary, equity, c.name as company_name, a.state, a.username
+      FROM jobs
+        LEFT JOIN companies AS c ON company_handle = c.handle
+        LEFT OUTER JOIN applications AS a on a.job_id = id AND a.username = $1
+        WHERE a.username = $1;
+    `, [username]);
+
+    let jobs = res.rows;
+    console.log(jobs);
+    return jobs;
+  }
+
   /** Find all jobs (can filter on terms in data). */
   static async findAll(data, username) {
     let baseQuery = `
@@ -153,7 +169,23 @@ class Job {
             VALUES ($1, $2, $3)`,
       [id, username, state]);
   }
+
+  static async unapply(id, username) {
+    const result = await db.query(
+      `DELETE FROM applications 
+            WHERE job_id = $1 AND username = $2
+            RETURNING job_id`,
+      [id, username]);
+
+    if (result.rows.length === 0) {
+      let notFound = new Error(`There exists no matching application '${id}`);
+      notFound.status = 404;
+      throw notFound;
+    }
+
+  }
 }
+
 
 
 module.exports = Job;

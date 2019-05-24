@@ -24,6 +24,19 @@ router.get("/", authRequired, async function (req, res, next) {
   }
 });
 
+/** GET /:username => {jobs: [job, ...]} */
+router.get("/:username", authRequired, async function (req, res, next) {
+  try {
+    const jobs = await Job.findUserJobs(req.params.username);
+    console.log({jobs});
+    return res.json({ jobs });
+  }
+
+  catch (err) {
+    return next(err);
+  }
+});
+
 /** GET /[jobid] => {job: job} */
 
 router.get("/:id", authRequired, async function (req, res, next) {
@@ -113,6 +126,15 @@ router.post("/:id/apply", authRequired, async function (req, res, next) {
   }
 });
 
+router.delete("/:id/apply", authRequired, async function (req, res, next) {
+  try {
+    const state = req.body.state || null;
+    await Job.unapply(req.params.id, req.username);
+    return res.json({ message: `Unapplied to job ${req.params.id}` });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 
 module.exports = router;

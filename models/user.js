@@ -14,7 +14,7 @@ class User {
   static async authenticate(data) {
     // try to find the user first
     const result = await db.query(
-        `SELECT username, 
+      `SELECT username, 
                 password, 
                 first_name, 
                 last_name, 
@@ -23,7 +23,7 @@ class User {
                 is_admin
           FROM users 
           WHERE username = $1`,
-        [data.username]
+      [data.username]
     );
 
     const user = result.rows[0];
@@ -45,15 +45,15 @@ class User {
 
   static async register(data) {
     const duplicateCheck = await db.query(
-        `SELECT username 
+      `SELECT username 
             FROM users 
             WHERE username = $1`,
-        [data.username]
+      [data.username]
     );
 
     if (duplicateCheck.rows[0]) {
       const err = new Error(
-          `There already exists a user with username '${data.username}`);
+        `There already exists a user with username '${data.username}`);
       err.status = 409;
       throw err;
     }
@@ -61,18 +61,18 @@ class User {
     const hashedPassword = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
 
     const result = await db.query(
-        `INSERT INTO users 
+      `INSERT INTO users 
             (username, password, first_name, last_name, email, photo_url) 
           VALUES ($1, $2, $3, $4, $5, $6) 
           RETURNING username, password, first_name, last_name, email, photo_url`,
-        [
-          data.username,
-          hashedPassword,
-          data.first_name,
-          data.last_name,
-          data.email,
-          data.photo_url
-        ]);
+      [
+        data.username,
+        hashedPassword,
+        data.first_name,
+        data.last_name,
+        data.email,
+        data.photo_url
+      ]);
 
     return result.rows[0];
   }
@@ -81,7 +81,7 @@ class User {
 
   static async findAll() {
     const result = await db.query(
-        `SELECT username, first_name, last_name, email
+      `SELECT username, first_name, last_name, email
           FROM users
           ORDER BY username`);
 
@@ -92,10 +92,10 @@ class User {
 
   static async findOne(username) {
     const userRes = await db.query(
-        `SELECT username, first_name, last_name, email, photo_url 
+      `SELECT username, first_name, last_name, email, photo_url 
             FROM users 
             WHERE username = $1`,
-        [username]);
+      [username]);
 
     const user = userRes.rows[0];
 
@@ -106,11 +106,11 @@ class User {
     }
 
     const userJobsRes = await db.query(
-        `SELECT j.id, j.title, j.company_handle, a.state 
+      `SELECT j.id, j.title, j.company_handle, a.state 
            FROM applications AS a
              JOIN jobs AS j ON j.id = a.job_id
            WHERE a.username = $1`,
-        [username]);
+      [username]);
 
     user.jobs = userJobsRes.rows;
     return user;
@@ -130,11 +130,11 @@ class User {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
     }
 
-    let {query, values} = partialUpdate(
-        "users",
-        data,
-        "username",
-        username
+    let { query, values } = partialUpdate(
+      "users",
+      data,
+      "username",
+      username
     );
 
     const result = await db.query(query, values);
@@ -155,11 +155,11 @@ class User {
   /** Delete given user from database; returns undefined. */
 
   static async remove(username) {
-      let result = await db.query(
-              `DELETE FROM users 
+    let result = await db.query(
+      `DELETE FROM users 
                 WHERE username = $1
                 RETURNING username`,
-              [username]);
+      [username]);
 
     if (result.rows.length === 0) {
       let notFound = new Error(`There exists no user '${username}'`);
