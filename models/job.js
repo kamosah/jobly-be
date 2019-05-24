@@ -18,7 +18,6 @@ class Job {
     `, [username]);
 
     let jobs = res.rows;
-    console.log(jobs);
     return jobs;
   }
 
