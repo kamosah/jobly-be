@@ -22,6 +22,7 @@ class Job {
   }
 
   /** Find all jobs (can filter on terms in data). */
+  
   static async findAll(data, username) {
     let baseQuery = `
       SELECT id, title, company_handle, salary, equity, c.name, a.state 
@@ -177,7 +178,7 @@ class Job {
       [id, username]);
 
     if (result.rows.length === 0) {
-      let notFound = new Error(`There exists no matching application '${id}`);
+      let notFound = new Error(`There exists no application for job '${id}`);
       notFound.status = 404;
       throw notFound;
     }

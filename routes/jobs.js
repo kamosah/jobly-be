@@ -24,7 +24,8 @@ router.get("/", authRequired, async function (req, res, next) {
   }
 });
 
-/** GET /:username => {jobs: [job, ...]} */
+/** GET /[username] => {jobs: [job, ...]} */
+
 router.get("/:username", authRequired, async function (req, res, next) {
   try {
     const jobs = await Job.findUserJobs(req.params.username);
@@ -125,6 +126,8 @@ router.post("/:id/apply", authRequired, async function (req, res, next) {
     return next(err);
   }
 });
+
+/** DELETE /[id]/apply  {message: "Unapplied to job [id] */
 
 router.delete("/:id/apply", authRequired, async function (req, res, next) {
   try {
