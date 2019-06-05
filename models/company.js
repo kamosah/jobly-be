@@ -76,7 +76,7 @@ class Company {
     const company = companyRes.rows[0];
 
     if (!company) {
-      const error = new Error(`There exists no company '${handle}'`);
+      const error = new Error(`There exists no company with handle: '${handle}'`);
       error.status = 404;   // 404 NOT FOUND
       throw error;
     }
@@ -104,7 +104,7 @@ class Company {
 
     if (duplicateCheck.rows[0]) {
       let duplicateError = new Error(
-        `There already exists a company with handle '${data.handle}`);
+        `There already exists a company with handle: '${data.handle}`);
       duplicateError.status = 409; // 409 Conflict
       throw duplicateError
     }
@@ -146,7 +146,7 @@ class Company {
     const company = result.rows[0];
 
     if (!company) {
-      let notFound = new Error(`There exists no company '${handle}`);
+      let notFound = new Error(`There exists no company with handle: '${handle}`);
       notFound.status = 404;
       throw notFound;
     }
@@ -164,7 +164,7 @@ class Company {
       [handle]);
 
     if (result.rows.length === 0) {
-      let notFound = new Error(`There exists no company '${handle}`);
+      let notFound = new Error(`There exists no company with handle: '${handle}`);
       notFound.status = 404;
       throw notFound;
     }
