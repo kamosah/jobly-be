@@ -15,8 +15,13 @@ const { jobNewSchema, jobUpdateSchema } = require("../schemas");
 
 router.get("/", authRequired, async function (req, res, next) {
   try {
-    const jobs = await Job.findAll(req.query, req.username);
-    return res.json({ jobs });
+    if (req.query.offset) {
+      const jobsAndCount = await Job.findSome(req.query, req.username);
+      return res.json({ jobsAndCount });
+    } else {
+      const jobs = await Job.findAll(req.query, req.username);
+      return res.json({ jobs });
+    }
   }
 
   catch (err) {

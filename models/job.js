@@ -61,6 +61,27 @@ class Job {
     return jobsRes.rows;
   }
 
+  /** Find jobs based on offset and amount */
+
+  static async findSome(data, username) {
+    const { offset, amt } = data;
+    const jobsRes = await db.query(`
+      SELECT id, title, company_handle, salary, equity, c.name, a.state 
+      FROM jobs
+        LEFT JOIN companies AS c ON company_handle = c.handle
+        LEFT OUTER JOIN applications AS a on a.job_id = id AND a.username = $1
+      ORDER BY id
+      OFFSET $2
+      LIMIT $3
+      `, [username, offset, amt]);
+    const totalCount = await db.query(`
+      SELECT COUNT(*)
+      FROM jobs
+      `);
+    return [jobsRes.rows, totalCount.rows[0].count];
+  }
+
+
   /** Given a job id, return data about job. */
 
   static async findOne(id) {

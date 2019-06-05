@@ -46,6 +46,24 @@ class Company {
     return companiesRes.rows;
   }
 
+    /** Find jobs based on offset and amount */
+
+    static async findSome(data) {
+      const { offset, amt } = data;
+      const companiesRes = await db.query(`
+        SELECT handle, name, description, logo_url
+          FROM companies
+        ORDER BY handle
+        OFFSET $1
+        LIMIT $2
+        `, [offset, amt]);
+      const totalCount = await db.query(`
+        SELECT COUNT(*)
+        FROM companies
+        `);
+      return [companiesRes.rows, totalCount.rows[0].count];
+    }
+
   /** Given a company handle, return data about company. */
 
   static async findOne(handle) {

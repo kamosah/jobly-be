@@ -15,15 +15,19 @@ const {companyNewSchema, companyUpdateSchema} = require("../schemas");
 
 router.get("/", authRequired, async function (req, res, next) {
   try {
-    const companies = await Company.findAll(req.query);
-    return res.json({companies});
+    if (req.query.offset) {
+      const companiesAndCount = await Company.findSome(req.query, req.username);
+      return res.json({ companiesAndCount });
+    } else {
+      const companies = await Company.findAll(req.query);
+      return res.json({companies});
+    }
   }
 
   catch (err) {
     return next(err);
   }
 });
-
 
 /** GET /[handle]  =>  {company: company} */
 
